@@ -1,6 +1,4 @@
-/**
- * Created by ziaha on 5/31/2019.
- */
+
 import java.awt.Rectangle;
 public class Wall {
     private int x;
@@ -27,5 +25,8 @@ public class Wall {
     }
     public Rectangle getRect(){
         return new Rectangle(getY()*getHeight(),getX()*getWidth(), getWidth(), getHeight());
+    }
+    public Rectangle collisionBox(int x, int y){
+        return new Rectangle(y*getHeight(), x*getWidth(), getWidth(), getHeight());
     }
 }

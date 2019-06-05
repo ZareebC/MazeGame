@@ -31,25 +31,41 @@ public class Hero {
         boolean canMove = true;
         switch(dir){
             //left
-            case 37: y--;
+            case 37:
+                for(Wall i: walls){
+                    if(collisionBox(x,y-1).intersects(i.getRect()))
+                        canMove = false;
+                }
+                if(canMove)
+                y--;
                 break;
             //up
-            case 38: x--;
+            case 38:
+                for(Wall i: walls){
+                    if(collisionBox(x-1,y).intersects(i.getRect()))
+                        canMove = false;
+                }
+                if(canMove)
+                    x--;
                 break;
             //right
-            case 39: y++;
+            case 39:
+                for(Wall i: walls){
+                    if(collisionBox(x,y+1).intersects(i.getRect()))
+                        canMove = false;
+                }
+                if(canMove)
+                y++;
                 break;
             //down
             case 40:
-                for(Wall i : walls){
-                    Rectangle futureLoc = new Rectangle(x-1, y, getWidth(), getHeight());
-                    if(futureLoc.intersects(i.getRect()));
+                for(Wall i: walls){
+                    if(collisionBox(x+1,y).intersects(i.getRect()))
                         canMove = false;
-                    if(canMove)
-                        x++;
-
                 }
-                break;
+                if(canMove)
+                x++;
+
         }
     }
     public int getWidth() {
@@ -70,5 +86,8 @@ public class Hero {
     }
     public void setY(int changeY){
         y-=10;
+    }
+    public Rectangle collisionBox(int x, int y){
+        return new Rectangle(y*getHeight(), x*getWidth(), getWidth(), getHeight());
     }
 }
