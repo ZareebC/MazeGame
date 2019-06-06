@@ -15,10 +15,12 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
     private int dim = 20;
     private int dir = 0;
 
+
     public Maze2() {
         frame = new JFrame("Maze");
         frame.add(this);
-        createMaze("maze.txt");
+        createText();
+        createMaze("mazeNew");
         //instantiate hero
         hero = new Hero(0, 6, dim, dim, Color.CYAN, Color.WHITE);
 
@@ -30,6 +32,31 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         thread = new Thread(this);
         thread.start();
     }
+    public void createText(){
+        File name = new File("maze.txt");
+
+        try
+        {
+            BufferedReader input = new BufferedReader(new FileReader(name));
+
+            String text,output="";
+            while( (text=input.readLine())!= null)
+            {
+                //System.out.println(text);
+                output+="X";
+            }
+
+
+            BufferedWriter OutputStream=new BufferedWriter(new FileWriter("mazeNew"));
+            OutputStream.write(output);
+            OutputStream.close();
+        }
+        catch (IOException io)
+        {
+            System.err.println("File does not exist");
+        }
+    }
+
 
     public void createMaze(String fileName) {
         walls = new ArrayList<Wall>();
@@ -65,6 +92,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         g2.setColor(Color.WHITE);
         g2.setStroke(new BasicStroke(3));
         g2.draw(hero.getRect());
+
     }
 
     public void run() {
