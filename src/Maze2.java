@@ -12,17 +12,19 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
     private boolean gameOn = true;
     private boolean right = false, up = false, down = false;
     private ArrayList<Wall> walls;
+    private String[][] Parts;
     private int dim = 20;
     private int dir = 0;
 
 
     public Maze2() {
+        Parts = new String[25][98];
         frame = new JFrame("Maze");
         frame.add(this);
         createText();
         createMaze("mazeNew");
         //instantiate hero
-        hero = new Hero(0, 6, dim, dim, Color.CYAN, Color.WHITE);
+        hero = new Hero(0, 0, dim, dim, Color.CYAN, Color.WHITE);
 
 
         frame.addKeyListener(this);
@@ -33,28 +35,59 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         thread.start();
     }
     public void createText(){
+        int num = 0;
+        int steps = 0;
+        int total = 0;
         File name = new File("maze.txt");
 
         try
         {
             BufferedReader input = new BufferedReader(new FileReader(name));
-
-            String text,output="";
-            while( (text=input.readLine())!= null)
-            {
+            String text="";
+            int row = 0;
+            while( (text=input.readLine()) != null ) {
                 //System.out.println(text);
-                output+="X";
+                for(int i = 0; i < text.length(); i++){
+                    Parts[row][i] = text.substring(i, i+1);
+                }
+                row++;
+
+
             }
 
-
-            BufferedWriter OutputStream=new BufferedWriter(new FileWriter("mazeNew"));
-            OutputStream.write(output);
-            OutputStream.close();
         }
+
         catch (IOException io)
         {
             System.err.println("File does not exist");
         }
+        try
+        {
+            BufferedReader input = new BufferedReader(new FileReader(name));
+            BufferedWriter OutputStream=new BufferedWriter(new FileWriter("mazeNew"));
+            String text,output="";
+            int row = 0;
+            while( (text=input.readLine()) != null ) {
+                for(int i = 0; i < text.length(); i++){
+                    output += Parts[row][i];
+                }
+                row++;
+
+                OutputStream.write(output);
+                output = "";
+                OutputStream.newLine();
+            }
+
+
+            OutputStream.close();
+
+        }
+
+        catch (IOException io)
+        {
+            System.err.println("File does not exist");
+        }
+
     }
 
 
