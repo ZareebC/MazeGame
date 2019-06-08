@@ -13,11 +13,13 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
     private boolean right = false, up = false, down = false;
     private ArrayList<Wall> walls;
     private String[][] Parts;
+    private ArrayList<MazeCell> cells;
     private int dim = 20;
     private int dir = 0;
 
 
     public Maze2() {
+        cells = new ArrayList<>();
         Parts = new String[25][98];
         frame = new JFrame("Maze");
         frame.add(this);
@@ -61,6 +63,26 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         {
             System.err.println("File does not exist");
         }
+        //Modify Array Here
+        int randRow = (int)(Math.random()*24)+1;
+        MazeCell start = new MazeCell(0, randRow);
+        //randRow = (int)(Math.random()*25);
+        MazeCell end = new MazeCell(97, randRow);
+        cells.add(start);
+        cells.add(end);
+        for(int i = 1; i < end.getX() - start.getX(); i++){
+            cells.add(new MazeCell(i, start.getY()));
+        }
+        int walk = 0;
+        for(int i = 0; i < 25; i++){
+            for(int j = 0; j < 98; j++){
+                if(walk < cells.size() && cells.get(walk).getY() == i && cells.get(walk).getX() == j){
+                    Parts[i][j] = "o";
+                    walk++;
+                }
+            }
+        }
+
         try
         {
             BufferedReader input = new BufferedReader(new FileReader(name));
