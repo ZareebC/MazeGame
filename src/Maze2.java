@@ -19,8 +19,8 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
 
 
     public Maze2() {
-        cells = new ArrayList<>();
-        Parts = new String[25][98];
+        cells = new ArrayList<MazeCell>();
+        Parts = new String[98][25];
         frame = new JFrame("Maze");
         frame.add(this);
         createText();
@@ -40,8 +40,10 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         int num = 0;
         int steps = 0;
         int total = 0;
+        int walk = 0;
         File name = new File("maze.txt");
 
+        //Convert to 2D Array
         try
         {
             BufferedReader input = new BufferedReader(new FileReader(name));
@@ -50,7 +52,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             while( (text=input.readLine()) != null ) {
                 //System.out.println(text);
                 for(int i = 0; i < text.length(); i++){
-                    Parts[row][i] = text.substring(i, i+1);
+                    Parts[i][row] = text.substring(i, i+1);
                 }
                 row++;
 
@@ -66,23 +68,75 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         //Modify Array Here
         int randRow = (int)(Math.random()*24)+1;
         MazeCell start = new MazeCell(0, randRow);
+        int startX = start.getX();
+        int startY = start.getY();
+        Parts[startX][startY] = "o";
         //randRow = (int)(Math.random()*25);
-        MazeCell end = new MazeCell(97, randRow);
+        MazeCell end = new MazeCell(51, randRow);
+        int endX = end.getX();
+        int endY = end.getY();
+        Parts[endX][endY] = "o";
         cells.add(start);
         cells.add(end);
-        for(int i = 1; i < end.getX() - start.getX(); i++){
-            cells.add(new MazeCell(i, start.getY()));
-        }
-        int walk = 0;
-        for(int i = 0; i < 25; i++){
-            for(int j = 0; j < 98; j++){
-                if(walk < cells.size() && cells.get(walk).getY() == i && cells.get(walk).getX() == j){
-                    Parts[i][j] = "o";
-                    walk++;
-                }
+
+        //Builds ArrayList for Pathway
+        while(startX != endX && cells.size() < 4000){
+            System.out.println(cells.size());
+            int randDirection = (int)(Math.random()*4)+1;
+            System.out.println(randDirection);
+            System.out.println(cells.get(cells.size()-1).getX() + " " + cells.get(cells.size()-1).getY());
+            switch(randDirection){
+                //Up
+                case 1:
+                    if(startY -1 >= 0  && startY-endY > -10) {
+                        System.out.println("inside1");
+                        startY--;
+                        cells.add(new MazeCell(startX, startY));
+                        Parts[startX][startY] = "o";
+                    }
+                    break;
+                //Down
+                case 2:
+                    if(startY + 1 < 24 && startY-endY < 10) {
+                        System.out.println("inside2");
+                        startY++;
+                        cells.add(new MazeCell(startX, startY));
+                        Parts[startX][startY] = "o";
+                    }
+                    break;
+                //Left
+                case 3:
+                    if(startX - 1 >= 7 ) {
+                        System.out.println("inside3");
+                        startX--;
+                        cells.add(new MazeCell(startX, startY));
+                        Parts[startX][startY] = "o";
+                    }
+                    break;
+                //Right
+                default:
+                    if(startX + 1 < 52) {
+                        System.out.println("inside4");
+                        startX++;
+                        cells.add(new MazeCell(startX, startY));
+                        Parts[startX][startY] = "o";
+                    }
+                    break;
             }
+
         }
 
+        //Builds Pathway
+        System.out.println(startY);
+        System.out.println(startX);
+        System.out.println(cells.size());
+        //for(int i = 0; i < cells.size(); i++){
+        //    System.out.println(cells.get(i).getX());
+          //  System.out.println(cells.get(i).getY());
+            //Parts[cells.get(i).getY()][cells.get(i).getX()] = "o";
+        //}
+
+        //Convert 2D Array to text file
         try
         {
             BufferedReader input = new BufferedReader(new FileReader(name));
@@ -91,7 +145,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             int row = 0;
             while( (text=input.readLine()) != null ) {
                 for(int i = 0; i < text.length(); i++){
-                    output += Parts[row][i];
+                    output += Parts[i][row];
                 }
                 row++;
 
