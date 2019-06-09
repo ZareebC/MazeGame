@@ -68,6 +68,48 @@ public class Hero {
 
         }
     }
+    //Trap Movement
+    public void moveShuffle(int dir, ArrayList<Wall> walls){
+        boolean canMove = true;
+        switch(dir){
+            //left
+            case 37:
+                for(Wall i: walls){
+                    if(collisionBox(x,y-1).intersects(i.getRect()))
+                        canMove = false;
+                }
+                if(canMove)
+                    y++;
+                break;
+            //up
+            case 38:
+                for(Wall i: walls){
+                    if(collisionBox(x-1,y).intersects(i.getRect()))
+                        canMove = false;
+                }
+                if(canMove)
+                    x++;
+                break;
+            //right
+            case 39:
+                for(Wall i: walls){
+                    if(collisionBox(x,y+1).intersects(i.getRect()))
+                        canMove = false;
+                }
+                if(canMove)
+                    y--;
+                break;
+            //down
+            case 40:
+                for(Wall i: walls){
+                    if(collisionBox(x+1,y).intersects(i.getRect()))
+                        canMove = false;
+                }
+                if(canMove)
+                    x--;
+
+        }
+    }
     public int getWidth() {
         return width;
     }

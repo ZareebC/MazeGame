@@ -1,6 +1,7 @@
-public class MazeCell {
-    private int x, y;
-    public MazeCell(int x, int y){
+public class MazeTrap {
+    private int x;
+    private int y;
+    public MazeTrap(int x, int y){
         this.x = x;
         this.y = y;
     }
@@ -11,4 +12,3 @@ public class MazeCell {
         return y;
     }
 }
-

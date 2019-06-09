@@ -10,27 +10,32 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
     private Hero hero;
     private Thread thread;
     private boolean gameOn = true;
+    private boolean trapSet = false;
     private boolean right = false, up = false, down = false;
     private ArrayList<Wall> walls;
     private String[][] Parts;
     private ArrayList<MazeCell> cells;
+    private ArrayList<MazeTrap> traps;
     private int dim = 20;
     private int dir = 0;
+    int randRow = 0;
 
 
     public Maze2() {
         cells = new ArrayList<MazeCell>();
-        Parts = new String[98][25];
+        traps = new ArrayList<MazeTrap>();
+        Parts = new String[52][25];
+        randRow = (int)(Math.random()*24)+1;
         frame = new JFrame("Maze");
         frame.add(this);
         createText();
         createMaze("mazeNew");
         //instantiate hero
-        hero = new Hero(0, 0, dim, dim, Color.CYAN, Color.WHITE);
+        hero = new Hero(randRow, 0, dim, dim, Color.CYAN, Color.WHITE);
 
 
         frame.addKeyListener(this);
-        frame.setSize(1300, 750);
+        frame.setSize(1100, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         thread = new Thread(this);
@@ -41,6 +46,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         int steps = 0;
         int total = 0;
         int walk = 0;
+        int trapProb = 0;
         File name = new File("maze.txt");
 
         //Convert to 2D Array
@@ -66,7 +72,6 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             System.err.println("File does not exist");
         }
         //Modify Array Here
-        int randRow = (int)(Math.random()*24)+1;
         MazeCell start = new MazeCell(0, randRow);
         int startX = start.getX();
         int startY = start.getY();
@@ -80,7 +85,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         cells.add(end);
 
         //Builds ArrayList for Pathway
-        while(startX != endX && cells.size() < 4000){
+        while(startX != endX && cells.size() < 40000){
             System.out.println(cells.size());
             int randDirection = (int)(Math.random()*4)+1;
             System.out.println(randDirection);
@@ -88,7 +93,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             switch(randDirection){
                 //Up
                 case 1:
-                    if(startY -1 >= 0  && startY-endY > -10) {
+                    if(startY -1 >= 0  && startY-endY > -15) {
                         System.out.println("inside1");
                         startY--;
                         cells.add(new MazeCell(startX, startY));
@@ -97,7 +102,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
                     break;
                 //Down
                 case 2:
-                    if(startY + 1 < 24 && startY-endY < 10) {
+                    if(startY + 1 < 24 && startY-endY < 15) {
                         System.out.println("inside2");
                         startY++;
                         cells.add(new MazeCell(startX, startY));
@@ -126,15 +131,28 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
 
         }
 
-        //Builds Pathway
-        System.out.println(startY);
-        System.out.println(startX);
-        System.out.println(cells.size());
-        //for(int i = 0; i < cells.size(); i++){
-        //    System.out.println(cells.get(i).getX());
-          //  System.out.println(cells.get(i).getY());
-            //Parts[cells.get(i).getY()][cells.get(i).getX()] = "o";
-        //}
+        //Builds Pathways
+        //System.out.println(startY);
+        //System.out.println(startX);
+        //System.out.println(cells.size());
+        for(int i = 0; i < Parts.length; i++){
+           for(int j = 0; j < Parts[0].length; j++){
+                if(Parts[i][j].equals("o") && j-1 >= 0 && i-1 >0){
+                    System.out.println("works");
+                    Parts[i][j-1] = "X";
+                    Parts[i-1][j] = "o";
+                }
+            }
+        }
+        //Place Traps
+        for(int i = 0; i < cells.size(); i++){
+            trapProb = (int)(Math.random()*100)+1;
+            if(trapProb == 4){
+                System.out.println("traps");
+                traps.add(new MazeTrap(cells.get(i).getX(), cells.get(i).getY()));
+                Parts[cells.get(i).getX()][cells.get(i).getY()] = "t";
+            }
+        }
 
         //Convert 2D Array to text file
         try
@@ -207,7 +225,13 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
     public void run() {
         while (true) {
             if (gameOn) {
-
+                if(Parts[hero.getY()][hero.getX()].equals("t")){
+                    trapSet = true;
+                    //Parts[hero.getY()][hero.getX()] = "o";
+                }
+                if(Parts[hero.getY()][hero.getX()].equals("o")){
+                    trapSet = false;
+                }
             }
             try {
                 thread.sleep(20);
@@ -219,9 +243,10 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
 
     public void keyPressed(KeyEvent e) {
         dir = e.getKeyCode();
-        hero.move(dir, walls);
-
-
+        if(trapSet)
+            hero.moveShuffle(dir, walls);
+        else
+            hero.move(dir, walls);
     }
 
     public void keyReleased(KeyEvent e) {
