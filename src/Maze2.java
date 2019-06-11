@@ -232,6 +232,11 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
                 if(Parts[hero.getY()][hero.getX()].equals("o")){
                     trapSet = false;
                 }
+                if (hero.getY() == Parts.length-1) {
+                    createText();
+                    createMaze("mazeNew");
+                    hero = new Hero(randRow, 0, dim, dim, Color.CYAN, Color.WHITE);
+                }
             }
             try {
                 thread.sleep(20);
