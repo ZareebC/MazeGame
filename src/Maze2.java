@@ -18,7 +18,10 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
     private ArrayList<MazeTrap> traps;
     private int dim = 20;
     private int dir = 0;
-    int randRow = 0;
+    private int cycle = 0;
+    private int randRow = 0;
+    private int rowI = 0;
+    private int delay = 0;
 
 
     public Maze2() {
@@ -154,10 +157,17 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             }
         }
 
+
+
+    }
+
+
+    public void createMaze(String fileName) {
+        File name1 = new File("maze.txt");
         //Convert 2D Array to text file
         try
         {
-            BufferedReader input = new BufferedReader(new FileReader(name));
+            BufferedReader input = new BufferedReader(new FileReader(name1));
             BufferedWriter OutputStream=new BufferedWriter(new FileWriter("mazeNew"));
             String text,output="";
             int row = 0;
@@ -181,11 +191,6 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         {
             System.err.println("File does not exist");
         }
-
-    }
-
-
-    public void createMaze(String fileName) {
         walls = new ArrayList<Wall>();
         File name = new File(fileName);
         try {
@@ -194,7 +199,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             String text;
             while ((text = input.readLine()) != null) {
                 for (int col = 0; col < text.length(); col++) {
-                    if (text.charAt(col) == 'X') {
+                    if (text.charAt(col) == 'X' || text.charAt(col) == 'U') {
                         walls.add(new Wall(row, col, dim, dim));
                     }
                 }
@@ -225,6 +230,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
     public void run() {
         while (true) {
             if (gameOn) {
+                //Traps
                 if(Parts[hero.getY()][hero.getX()].equals("t")){
                     trapSet = true;
                     //Parts[hero.getY()][hero.getX()] = "o";
@@ -237,21 +243,59 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
                     createMaze("mazeNew");
                     hero = new Hero(randRow, 0, dim, dim, Color.CYAN, Color.WHITE);
                 }
+
+                    //delayMethod();
+                    while(rowI < Parts[0].length) {
+                        Parts[cycle][rowI] = "U";
+                        System.out.println("check" + cycle);
+                        rowI++;
+                    }
+                    createMaze("mazeNew");
+                    cycle++;
+                    rowI = 0;
+
+
             }
             try {
-                thread.sleep(20);
+                thread.sleep(1000);
             } catch (InterruptedException e) {
             }
             repaint();
         }
     }
-
+    public void delayMethod(){
+        delay = 0;
+        while(delay < 10000000){
+            delay++;
+        }
+        delay = 0;
+        while(delay < 10000000){
+            delay++;
+        }
+        delay = 0;
+        while(delay < 10000000){
+            delay++;
+        }
+        delay = 0;
+        while(delay < 10000000){
+            delay++;
+        }
+        delay = 0;
+        while(delay < 10000000){
+            delay++;
+        }
+        delay = 0;
+        while(delay < 10000000){
+            delay++;
+        }
+    }
     public void keyPressed(KeyEvent e) {
         dir = e.getKeyCode();
         if(trapSet)
             hero.moveShuffle(dir, walls);
         else
             hero.move(dir, walls);
+        repaint();
     }
 
     public void keyReleased(KeyEvent e) {
