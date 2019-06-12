@@ -231,8 +231,9 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         for(Lava i : lava){
             g2.fill(i.getRect());
         }
+        g2.setColor(new Color(232, 240, 115));
         g2.setFont(new Font("Ariel", Font.BOLD, 30));
-        g2.drawString("Score: " + Integer.toString(score), 100, 50);
+        g2.drawString("Score: " + Integer.toString(score), 60, 40);
         repaint();
     }
 
@@ -280,6 +281,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             }
             repaint();
             score++;
+            
         }
     }
     public void keyPressed(KeyEvent e) {
