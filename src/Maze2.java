@@ -16,6 +16,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
     private String[][] Parts;
     private ArrayList<MazeCell> cells;
     private ArrayList<MazeTrap> traps;
+    private ArrayList<Lava> lava;
     private int dim = 20;
     private int dir = 0;
     private int cycle = 0;
@@ -224,69 +225,55 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         g2.setColor(Color.WHITE);
         g2.setStroke(new BasicStroke(3));
         g2.draw(hero.getRect());
-
+        g2.setColor(Color.decode("#7000e5"));
+        for(Lava i : lava){
+            g2.fill(i.getRect());
+        }
+        repaint();
     }
 
     public void run() {
+        lava = new ArrayList<Lava>();
         while (true) {
             if (gameOn) {
                 //Traps
-                if(Parts[hero.getY()][hero.getX()].equals("t")){
+                if (Parts[hero.getY()][hero.getX()].equals("t")) {
                     trapSet = true;
                     //Parts[hero.getY()][hero.getX()] = "o";
                 }
-                if(Parts[hero.getY()][hero.getX()].equals("o")){
+                if (Parts[hero.getY()][hero.getX()].equals("o")) {
                     trapSet = false;
                 }
-                if (hero.getY() == Parts.length-1) {
+                if (hero.getY() == Parts.length - 1) {
+                    cycle = 0;
                     createText();
                     createMaze("mazeNew");
+                    lava.clear();
                     hero = new Hero(randRow, 0, dim, dim, Color.CYAN, Color.WHITE);
                 }
-
-                    //delayMethod();
-                    while(rowI < Parts[0].length) {
-                        Parts[cycle][rowI] = "U";
-                        System.out.println("check" + cycle);
-                        rowI++;
+                if (hero.getY() > 5 && cycle < Parts.length) {
+                    while (rowI < Parts[0].length) {
+                        if(Parts[cycle][rowI].equals("o") || Parts[cycle][rowI].equals("t")) {
+                            Parts[cycle][rowI] = "U";
+                            lava.add(new Lava(rowI, cycle, dim, dim));
+                            System.out.println("check" + cycle);
+                            rowI++;
+                        }
+                        if(Parts[cycle][rowI].equals("X"))
+                            rowI++;
                     }
                     createMaze("mazeNew");
                     cycle++;
                     rowI = 0;
 
 
+                }
             }
             try {
-                thread.sleep(1000);
+                thread.sleep(250);
             } catch (InterruptedException e) {
             }
             repaint();
-        }
-    }
-    public void delayMethod(){
-        delay = 0;
-        while(delay < 10000000){
-            delay++;
-        }
-        delay = 0;
-        while(delay < 10000000){
-            delay++;
-        }
-        delay = 0;
-        while(delay < 10000000){
-            delay++;
-        }
-        delay = 0;
-        while(delay < 10000000){
-            delay++;
-        }
-        delay = 0;
-        while(delay < 10000000){
-            delay++;
-        }
-        delay = 0;
-        while(delay < 10000000){
-            delay++;
         }
     }
     public void keyPressed(KeyEvent e) {
