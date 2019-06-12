@@ -23,6 +23,8 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
     private int randRow = 0;
     private int rowI = 0;
     private int delay = 0;
+    private int score = 0;
+    private int millis = 1500;
 
 
     public Maze2() {
@@ -229,6 +231,8 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         for(Lava i : lava){
             g2.fill(i.getRect());
         }
+        g2.setFont(new Font("Ariel", Font.BOLD, 30));
+        g2.drawString("Score: " + Integer.toString(score), 100, 50);
         repaint();
     }
 
@@ -249,6 +253,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
                     createText();
                     createMaze("mazeNew");
                     lava.clear();
+                    millis*=.80;
                     hero = new Hero(randRow, 0, dim, dim, Color.CYAN, Color.WHITE);
                 }
                 if (hero.getY() > 5 && cycle < Parts.length) {
@@ -270,10 +275,11 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
                 }
             }
             try {
-                thread.sleep(250);
+                thread.sleep(millis);
             } catch (InterruptedException e) {
             }
             repaint();
+            score++;
         }
     }
     public void keyPressed(KeyEvent e) {
