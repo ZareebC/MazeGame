@@ -75,7 +75,7 @@ public class Hero {
             //left
             case 37:
                 for(Wall i: walls){
-                    if(collisionBox(x,y-1).intersects(i.getRect()))
+                    if(collisionBox(x,y+1).intersects(i.getRect()))
                         canMove = false;
                 }
                 if(canMove)
@@ -84,7 +84,7 @@ public class Hero {
             //up
             case 38:
                 for(Wall i: walls){
-                    if(collisionBox(x-1,y).intersects(i.getRect()))
+                    if(collisionBox(x+1,y).intersects(i.getRect()))
                         canMove = false;
                 }
                 if(canMove)
@@ -93,7 +93,7 @@ public class Hero {
             //right
             case 39:
                 for(Wall i: walls){
-                    if(collisionBox(x,y+1).intersects(i.getRect()))
+                    if(collisionBox(x,y-1).intersects(i.getRect()))
                         canMove = false;
                 }
                 if(canMove)
@@ -102,7 +102,7 @@ public class Hero {
             //down
             case 40:
                 for(Wall i: walls){
-                    if(collisionBox(x+1,y).intersects(i.getRect()))
+                    if(collisionBox(x-1,y).intersects(i.getRect()))
                         canMove = false;
                 }
                 if(canMove)

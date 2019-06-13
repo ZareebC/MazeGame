@@ -24,7 +24,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
     private int rowI = 0;
     private int delay = 0;
     private int score = 0;
-    private int millis = 1500;
+    private int millis = 700;
 
 
     public Maze2() {
@@ -78,12 +78,12 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             System.err.println("File does not exist");
         }
         //Modify Array Here
-        MazeCell start = new MazeCell(0, randRow);
+        MazeCell start = new MazeCell(0, randRow, dim, dim);
         int startX = start.getX();
         int startY = start.getY();
         Parts[startX][startY] = "o";
         //randRow = (int)(Math.random()*25);
-        MazeCell end = new MazeCell(51, randRow);
+        MazeCell end = new MazeCell(51, randRow, dim, dim);
         int endX = end.getX();
         int endY = end.getY();
         Parts[endX][endY] = "o";
@@ -102,7 +102,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
                     if(startY -1 >= 0  && startY-endY > -15) {
                         System.out.println("inside1");
                         startY--;
-                        cells.add(new MazeCell(startX, startY));
+                        cells.add(new MazeCell(startX, startY, dim, dim));
                         Parts[startX][startY] = "o";
                     }
                     break;
@@ -111,7 +111,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
                     if(startY + 1 < 24 && startY-endY < 15) {
                         System.out.println("inside2");
                         startY++;
-                        cells.add(new MazeCell(startX, startY));
+                        cells.add(new MazeCell(startX, startY, dim, dim));
                         Parts[startX][startY] = "o";
                     }
                     break;
@@ -120,7 +120,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
                     if(startX - 1 >= 7 ) {
                         System.out.println("inside3");
                         startX--;
-                        cells.add(new MazeCell(startX, startY));
+                        cells.add(new MazeCell(startX, startY, dim, dim));
                         Parts[startX][startY] = "o";
                     }
                     break;
@@ -129,7 +129,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
                     if(startX + 1 < 52) {
                         System.out.println("inside4");
                         startX++;
-                        cells.add(new MazeCell(startX, startY));
+                        cells.add(new MazeCell(startX, startY, dim, dim));
                         Parts[startX][startY] = "o";
                     }
                     break;
@@ -155,7 +155,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             trapProb = (int)(Math.random()*100)+1;
             if(trapProb == 4){
                 System.out.println("traps");
-                traps.add(new MazeTrap(cells.get(i).getX(), cells.get(i).getY()));
+                traps.add(new MazeTrap(cells.get(i).getX(), cells.get(i).getY(), dim, dim));
                 Parts[cells.get(i).getX()][cells.get(i).getY()] = "t";
             }
         }
@@ -176,8 +176,9 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             int row = 0;
             while( (text=input.readLine()) != null ) {
                 for(int i = 0; i < text.length(); i++){
-                    output += Parts[i][row];
+                    output += Parts[i][row] ;
                 }
+                output += "X";
                 row++;
 
                 OutputStream.write(output);
@@ -232,8 +233,21 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             g2.fill(i.getRect());
         }
         g2.setColor(new Color(232, 240, 115));
-        g2.setFont(new Font("Ariel", Font.BOLD, 30));
+        g2.setFont(new Font("Arial", Font.BOLD, 30));
         g2.drawString("Score: " + Integer.toString(score), 60, 40);
+        g2.setColor(new Color(36, 233, 32));
+        for(int i = 0; i < Parts.length; i++){
+            for(int j = 0; j < Parts[0].length; j++){
+                if(Parts.length == 51){
+                    cells.add(new MazeCell(i,j, dim, dim));
+                }
+            }
+            g2.fill(cells.get(cells.size()-1).getRect());
+        }
+        g2.setColor(new Color(30, 172, 233));
+        for(int i = 0; i < traps.size(); i++){
+            g2.fill(traps.get(i).getRect());
+        }
         repaint();
     }
 
@@ -241,14 +255,6 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         lava = new ArrayList<Lava>();
         while (true) {
             if (gameOn) {
-                //Traps
-                if (Parts[hero.getY()][hero.getX()].equals("t")) {
-                    trapSet = true;
-                    //Parts[hero.getY()][hero.getX()] = "o";
-                }
-                if (Parts[hero.getY()][hero.getX()].equals("o")) {
-                    trapSet = false;
-                }
                 if (hero.getY() == Parts.length - 1) {
                     cycle = 0;
                     createText();
@@ -266,13 +272,15 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
                             rowI++;
                         }
                         if(Parts[cycle][rowI].equals("X"))
-                            rowI++;
+                        rowI++;
                     }
                     createMaze("mazeNew");
                     cycle++;
                     rowI = 0;
-
-
+                    if(cycle >= hero.getY()){
+                        gameOn = false;
+                        frame.setVisible(false);
+                    }
                 }
             }
             try {
@@ -280,11 +288,19 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             } catch (InterruptedException e) {
             }
             repaint();
-            score++;
-            
+            if(hero.getY() > 5)
+                score++;
         }
     }
     public void keyPressed(KeyEvent e) {
+        //Traps
+        if (Parts[hero.getY()][hero.getX()].equals("t")) {
+            trapSet = true;
+            //Parts[hero.getY()][hero.getX()] = "o";
+        }
+        if (Parts[hero.getY()][hero.getX()].equals("o")) {
+            trapSet = false;
+        }
         dir = e.getKeyCode();
         if(trapSet)
             hero.moveShuffle(dir, walls);
