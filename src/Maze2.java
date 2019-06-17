@@ -25,11 +25,11 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
     private int delay = 0;
     private int score = 0;
     private int millis = 700;
+    private int trapPick = 20;
 
 
     public Maze2() {
         cells = new ArrayList<MazeCell>();
-        traps = new ArrayList<MazeTrap>();
         Parts = new String[52][25];
         randRow = (int)(Math.random()*24)+1;
         frame = new JFrame("Maze");
@@ -151,17 +151,16 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             }
         }
         //Place Traps
-        for(int i = 0; i < cells.size(); i++){
-            trapProb = (int)(Math.random()*100)+1;
-            if(trapProb == 4){
-                System.out.println("traps");
-                traps.add(new MazeTrap(cells.get(i).getX(), cells.get(i).getY(), dim, dim));
-                Parts[cells.get(i).getX()][cells.get(i).getY()] = "t";
+        traps = new ArrayList<MazeTrap>();
+        for(int i = 0; i < Parts.length; i++){
+            for(int j = 0; j < Parts[0].length; j++){
+                trapProb = (int)(Math.random()*trapPick)+1;
+                if(trapProb == 4 && Parts[i][j].equals("o")){
+                    traps.add(new MazeTrap(i , j, dim, dim));
+                    Parts[i][j] = "t";
+                }
             }
         }
-
-
-
     }
 
 
@@ -247,6 +246,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
         g2.setColor(new Color(30, 172, 233));
         for(int i = 0; i < traps.size(); i++){
             g2.fill(traps.get(i).getRect());
+            repaint();
         }
         repaint();
     }
@@ -257,6 +257,8 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             if (gameOn) {
                 if (hero.getY() == Parts.length - 1) {
                     cycle = 0;
+                    trapPick--;
+                    traps.clear();
                     createText();
                     createMaze("mazeNew");
                     lava.clear();
@@ -298,7 +300,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             trapSet = true;
             //Parts[hero.getY()][hero.getX()] = "o";
         }
-        if (Parts[hero.getY()][hero.getX()].equals("o")) {
+        else if (Parts[hero.getY()][hero.getX()].equals("o")) {
             trapSet = false;
         }
         dir = e.getKeyCode();
