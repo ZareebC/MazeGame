@@ -26,6 +26,7 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
     private int score = 0;
     private int millis = 700;
     private int trapPick = 20;
+    private boolean mode = true;
 
 
     public Maze2() {
@@ -248,6 +249,15 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             g2.fill(traps.get(i).getRect());
             repaint();
         }
+        if(mode){
+            g2.setColor(new Color(43, 180, 226));
+            g2.fillRect(0, 0, frame.getWidth(), frame.getHeight());
+            g2.setColor(Color.ORANGE);
+            g2.setFont(new Font("Arial",Font.ITALIC, 50));
+            g2.drawString("Blue blocks invert your controls", 180, 300);
+            g2.setFont(new Font("Arial",Font.ITALIC, 70));
+            g2.drawString("Press 'space' to start", 200, 200);
+        }
         repaint();
     }
 
@@ -308,6 +318,8 @@ public class Maze2 extends JPanel implements KeyListener,Runnable {
             hero.moveShuffle(dir, walls);
         else
             hero.move(dir, walls);
+        if(dir == 32)
+            mode = false;
         repaint();
     }
 
